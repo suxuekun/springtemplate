@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	<context:property-placeholder location="classpath:config.properties" />
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/**" location="/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<context:component-scan base-package="com.techstudio.controller" />
+	<context:component-scan base-package="com.techstudio.common"/>
+	<context:component-scan base-package="com.techstudio.dao" />
+	<context:component-scan base-package="com.techstudio.groomer" />
+	<context:component-scan base-package="com.techstudio.sectest.dao" />
+	<mvc:annotation-driven />
+	<tx:annotation-driven/>
+ 
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+		<property name="driverClassName" value="${database.driver}" />  
+		<property name="url" value="${database.url}" />  
+		<property name="username" value="${database.user}" />  
+		<property name="password" value="${database.password}" />  
+	</bean>
+	
+	<!--LoadPic Setting-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- setting maximum upload size -->
+		<property name="maxUploadSize" value="2048000" />
+	</bean>
+ 
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">  
+		<property name="sessionFactory" ref="sessionFactory" /> 
+	</bean>
+ 
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  
+		<property name="dataSource" ref="dataSource" />   
+		<property name="hibernateProperties">  
+			<props>  
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>  
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="current_session_context_class">thread</prop>
+			</props>  
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.techstudio.model</value>
+			</list>
+		</property>
+	</bean> 
+</beans>
